@@ -1,0 +1,72 @@
+version: "3"
+services:
+  octopus:
+    image: node:11.10
+    volumes:
+      - .:/app
+    networks:
+      - traefik
+      - podcloud
+      - default
+    working_dir: /app
+    ports:
+        - 3000
+    labels:
+        traefik.port: 3000
+        traefik.frontend.rule: "Host:kraken.podcloud.test"
+        traefik.frontend.priority: 500
+    command: npm start
+
+  storage_one:
+    image: atmoz/sftp:alpine-3.7
+    volumes:
+      - ./storages/one/data:/home/data
+      - ./storages/one/id_rsa.pub:/home/data/.ssh/keys/id_rsa.pub:ro
+    networks:
+      - podcloud
+      - default
+    labels:
+      traefik.enable: false
+    command: data::1001
+
+  storage_two:
+    image: atmoz/sftp:alpine-3.7
+    volumes:
+      - ./storages/two/data:/home/data
+      - ./storages/two/id_rsa.pub:/home/data/.ssh/keys/id_rsa.pub:ro
+    networks:
+      - podcloud
+      - default
+    labels:
+      traefik.enable: false
+    command: data::1001
+
+  storage_three:
+    image: atmoz/sftp:alpine-3.7
+    volumes:
+      - ./storages/three/data:/home/data
+      - ./storages/three/id_rsa.pub:/home/data/.ssh/keys/id_rsa.pub:ro
+    networks:
+      - podcloud
+      - default
+    labels:
+      traefik.enable: false
+    command: data::1001
+
+  storage_four:
+    image: atmoz/sftp:alpine-3.7
+    volumes:
+      - ./storages/four/data:/home/data
+      - ./storages/four/id_rsa.pub:/home/data/.ssh/keys/id_rsa.pub:ro
+    networks:
+      - podcloud
+      - default
+    labels:
+      traefik.enable: false
+    command: data::1001
+
+networks:
+  podcloud:
+    external: true
+  traefik:
+    external: true
