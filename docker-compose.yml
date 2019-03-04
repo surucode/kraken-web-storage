@@ -17,6 +17,19 @@ services:
         traefik.frontend.priority: 500
     command: npm start
 
+  mongo:
+    image: mongo:4.0
+    networks:
+      - default
+      - podcloud
+    volumes:
+      - ./support/mongo/data/db:/data/db
+      - ./support/mongo/dump:/dump
+    environment:
+      - AUTH=false
+    labels:
+      - traefik.enable:false
+
   storage_one:
     image: atmoz/sftp:alpine-3.7
     volumes:
