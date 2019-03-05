@@ -1,4 +1,4 @@
-import { getSftp, files } from "../../../Clover";
+import { getSftp, files, shuffle } from "../../../Clover";
 
 export default async function routes(fastify, options) {
   fastify.get("/files/:file_id", async (request, reply) => {

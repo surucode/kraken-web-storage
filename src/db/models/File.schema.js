@@ -1,4 +1,5 @@
 import { Schema } from "mongoose";
+import { ObjectId } from "mongoose/types";
 
 const schema = Schema({
   crc32: {

@@ -58,6 +58,6 @@ export const getSftp = storage =>
       });
   });
 
-const files = {};
+export const files = {};
 
 export default { shuffle, uuid, getSftp, files };
