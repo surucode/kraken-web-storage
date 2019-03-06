@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import FileSchema from "./File.schema.js";
 
 const File = mongoose.model("File", FileSchema);

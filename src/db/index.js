@@ -1,5 +1,7 @@
-export * from "./models";
-
+import * as models from "./models";
 import DB from "./DB";
-export { DB };
-export default DB;
+
+module.exports.default = module.exports = {
+  ...DB,
+  ...models
+};

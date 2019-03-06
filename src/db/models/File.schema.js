@@ -1,40 +1,45 @@
 import { Schema } from "mongoose";
-import { ObjectId } from "mongoose/types";
+import timestamps from "mongoose-updated_at";
 
-const schema = Schema({
-  crc32: {
-    type: String,
-    required: true,
-    uppercase: true,
-    index: true,
-    match: /^[0-9A-F]{8}$/
+const { ObjectId } = Schema.Types;
+
+const FileSchema = Schema(
+  {
+    md5: {
+      type: String,
+      required: true,
+      lowercase: true,
+      index: true,
+      match: /^[a-f0-9]{32}$/
+    },
+    sha1: {
+      type: String,
+      required: true,
+      lowercase: true,
+      index: true,
+      unique: true,
+      match: /^[0-9a-f]{40}$/
+    },
+    mimetype: {
+      type: String,
+      required: true,
+      maxlength: 255
+    },
+    size: {
+      type: Number,
+      required: true
+    },
+    storage_nodes: [{ type: ObjectId, ref: "StorageNode", index: true }]
   },
-  sha1: {
-    type: String,
-    required: true,
-    lowercase: true,
-    index: true,
-    unique: true,
-    match: /^[0-9a-f]{40}$/
-  },
-  filename: {
-    type: String,
-    required: true,
-    maxlength: 255
-  },
-  content_type: {
-    type: String,
-    required: true,
-    maxlength: 255
-  },
-  size: {
-    type: Number,
-    required: true
-  },
-  storage_nodes: [{ type: ObjectId, ref: "StorageNode", index: true }]
+  { collection: "files" }
+);
+
+FileSchema.index({ storage_nodes: 1 });
+FileSchema.index({ md5: 1, sha1: 1 });
+
+FileSchema.plugin(timestamps, {
+  createdAtOn: "created_at",
+  updatedAtOn: "updated_at"
 });
 
-schema.index({ sha1: 1, storage_nodes: 1 });
-schema.index({ crc32: 1, sha1: 1 });
-
-export default schema;
+export default FileSchema;

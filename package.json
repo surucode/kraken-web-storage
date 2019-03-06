@@ -9,10 +9,11 @@
   },
   "dependencies": {
     "config": "^3.0.1",
-    "crc32-stream": "^2.0.0",
     "fastify": "^2.0.0",
     "fastify-file-upload": "^1.0.0",
     "mongoose": "^5.4.17",
+    "mongoose-random": "^0.1.1",
+    "mongoose-updated_at": "0.0.2",
     "sha1-stream": "^1.0.1",
     "ssh2": "^0.8.2"
   },
