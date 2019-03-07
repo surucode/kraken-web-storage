@@ -1,31 +1,30 @@
-import { getSftp, files, shuffle } from "../../../Clover";
+import { StoredObject } from "../../../db";
 
 export default async function routes(fastify, options) {
-  fastify.get("/files/:file_id", async (request, reply) => {
-    const filename = request.params.file_id;
-    const file_storages = files[filename];
-    if (file_storages) {
-      const storage = shuffle(file_storages)[0];
-      const { sftp, client } = await getSftp(storage);
+  fastify.get("/objects/:object_id", async (request, reply) => {
+    const _id = request.params.object_id;
 
-      await new Promise((resolve, reject) => {
-        sftp.stat("/files/" + filename, (err, stats) => {
-          if (err) return reject(err);
+    const obj = await StoredObject.findOne({ _id }).populate({
+      path: "file",
+      populate: {
+        path: "storage_nodes",
+        model: "StorageNode"
+      }
+    });
 
-          console.log(stats);
+    if (!obj) throw new Error("No object found for this id");
 
-          const str = sftp.createReadStream(`/files/${filename}`);
+    const read_stream = await obj.getReadStream();
 
-          if (str) {
-            str
-              .on("finish", resolve)
-              .on("error", reject)
-              .on("open", () => {
-                reply.send(str);
-              });
-          }
-        });
-      });
-    }
+    await new Promise((resolve, reject) => {
+      if (read_stream) {
+        read_stream
+          .on("finish", resolve)
+          .on("error", reject)
+          .on("open", () => {
+            reply.send(read_stream);
+          });
+      }
+    });
   });
 }

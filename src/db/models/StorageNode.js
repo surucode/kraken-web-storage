@@ -62,25 +62,35 @@ const mkdirp = function(sftp, path) {
   return exists(path).then(exists => !exists && mkdir(path));
 };
 
-StorageNode.prototype.scpFile = async function(file, data) {
+StorageNode.prototype.writeFile = async function(file, stream) {
   const sftp = await this.getSftp();
 
-  const path = `/files/${file.sha1.match(/.{1,4}/g).join("/")}`;
+  const path = `/files/${file.md5.match(/.{1,4}/g).join("/")}`;
   await mkdirp(sftp, path);
-  const str = sftp.createWriteStream(`${path}/${file.sha1}`);
+  const str = sftp.createWriteStream(`${path}/${file.md5}`);
 
   await new Promise((resolve, reject) => {
     str
       .on("finish", resolve)
       .on("error", reject)
       .on("open", () => {
-        str.end(data);
+        stream.pipe(str);
       });
   });
 
   file.storage_nodes.push(this._id);
   await file.save();
   sftp.end();
+};
+
+StorageNode.prototype.readFile = async function(file) {
+  const sftp = await this.getSftp();
+  const path = `/files/${file.md5.match(/.{1,4}/g).join("/")}`;
+  console.log(`reading file ${path}/${file.md5}`);
+  const stream = sftp.createReadStream(`${path}/${file.md5}`);
+  stream.on("end", sftp.end.bind(sftp));
+
+  return stream;
 };
 
 export default StorageNode;

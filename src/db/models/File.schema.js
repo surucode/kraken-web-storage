@@ -10,15 +10,8 @@ const FileSchema = Schema(
       required: true,
       lowercase: true,
       index: true,
-      match: /^[a-f0-9]{32}$/
-    },
-    sha1: {
-      type: String,
-      required: true,
-      lowercase: true,
-      index: true,
       unique: true,
-      match: /^[0-9a-f]{40}$/
+      match: /^[a-f0-9]{32}$/
     },
     mimetype: {
       type: String,
@@ -35,7 +28,6 @@ const FileSchema = Schema(
 );
 
 FileSchema.index({ storage_nodes: 1 });
-FileSchema.index({ md5: 1, sha1: 1 });
 
 FileSchema.plugin(timestamps, {
   createdAtOn: "created_at",

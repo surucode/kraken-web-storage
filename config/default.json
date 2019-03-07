@@ -1,3 +1,3 @@
 {
-  "db": "mongodb://mongo:27017/kraken"
+  "db": "mongodb://kraken_db:27017/kraken"
 }

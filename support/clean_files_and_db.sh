@@ -1,2 +1,3 @@
 #!/bin/sh
-sudo rm -rf mongo/data/* && sudo rm -rf storages/**/data/files
+cd $(dirname $0)
+sudo rm -rfv mongo/data/* storages/**/data/files

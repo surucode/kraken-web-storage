@@ -9,12 +9,12 @@
   },
   "dependencies": {
     "config": "^3.0.1",
+    "express-fileupload": "^1.1.2-alpha.1",
     "fastify": "^2.0.0",
-    "fastify-file-upload": "^1.0.0",
+    "fastify-plugin": "^1.5.0",
     "mongoose": "^5.4.17",
     "mongoose-random": "^0.1.1",
     "mongoose-updated_at": "0.0.2",
-    "sha1-stream": "^1.0.1",
     "ssh2": "^0.8.2"
   },
   "devDependencies": {
@@ -35,7 +35,7 @@
   "license": "ISC",
   "nodemonConfig": {
     "ignore": [
-      "storage/*"
+      "support/*"
     ],
     "delay": "2500"
   }

@@ -15,9 +15,15 @@ services:
         traefik.port: 3000
         traefik.frontend.rule: "Host:kraken.podcloud.test"
         traefik.frontend.priority: 500
+    depends_on:
+        - kraken_db
+        - storage_one
+        - storage_two
+        - storage_three
+        - storage_four
     command: npm start
 
-  mongo:
+  kraken_db:
     image: mongo:4.0
     networks:
       - default

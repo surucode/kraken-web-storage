@@ -4,11 +4,12 @@ import timestamps from "mongoose-updated_at";
 
 const StoredObjectSchema = Schema(
   {
-    file: {
+    md5: {
       type: String,
       required: true,
       lowercase: true,
-      match: /^[0-9a-f]{40}$/
+      index: true,
+      match: /^[0-9a-f]{32}$/
     },
     filename: {
       type: String,
@@ -27,6 +28,13 @@ const StoredObjectSchema = Schema(
   },
   { collection: "stored_objects" }
 );
+
+StoredObjectSchema.virtual("file", {
+  ref: "File", // The model to use
+  localField: "md5", // Find people where `localField`
+  foreignField: "md5", // is equal to `foreignField`
+  justOne: true
+});
 
 StoredObjectSchema.plugin(timestamps, {
   createdAtOn: "created_at",

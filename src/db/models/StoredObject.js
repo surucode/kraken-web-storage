@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 import StoredObjectSchema from "./StoredObject.schema.js";
 
-import shastream from "sha1-stream";
-
 import StorageNode from "./StorageNode";
 import File from "./File";
 
@@ -10,40 +8,25 @@ const StoredObject = mongoose.model("StoredObject", StoredObjectSchema);
 
 StoredObject.storeFile = async ({
   filename,
-  data,
+  size,
+  stream,
   mimetype,
+  md5,
   pub,
   metadata
 }) => {
-  const size = data.byteLength;
-
-  const [md5, sha1] = await Promise.all([
-    new Promise((resolve, reject) => {
-      const sniff = shastream.createStream("md5");
-      sniff.on("digest", result => resolve(result));
-      sniff.on("error", err => reject(err));
-      sniff.end(data);
-    }),
-    new Promise((resolve, reject) => {
-      const sniff = shastream.createStream("sha1");
-      sniff.on("digest", result => resolve(result));
-      sniff.on("error", err => reject(err));
-      sniff.end(data);
-    })
-  ]);
-
-  let file = await File.findOne({ md5, sha1 }).exec();
+  let file = await File.findOne({ md5 }).exec();
 
   if (!file) {
-    file = await File.create({ md5, sha1, mimetype, size });
+    file = await File.create({ md5, mimetype, size });
     const nodes = await StorageNode.findRandom()
       .limit(3)
       .exec();
-    await Promise.all(nodes.map(node => node.scpFile(file, data)));
+    await Promise.all(nodes.map(node => node.writeFile(file, stream)));
   }
 
   const stored = await StoredObject.create({
-    file: sha1,
+    md5,
     filename,
     pub: pub || true,
     metadata: metadata || {}
@@ -52,6 +35,18 @@ StoredObject.storeFile = async ({
   stored.FileModel = file;
 
   return stored;
+};
+
+StoredObject.prototype.getReadStream = async function() {
+  if (!this.file) throw new Error("No file found for this object");
+
+  const storage = this.file.storage_nodes[
+    Math.floor(Math.random() * this.file.storage_nodes.length)
+  ];
+
+  if (!storage) throw new Error("No storage found for this file");
+
+  return await storage.readFile(this.file);
 };
 
 export default StoredObject;
