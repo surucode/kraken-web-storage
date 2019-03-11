@@ -11,11 +11,6 @@ export default async function routes(fastify, options) {
   });
 
   fastify.post("/upload", async (request, reply) => {
-    console.log(request);
-    console.log(request.files);
-    console.log(request.raw);
-    console.log(request.raw.files);
-
     const uploaded = request.raw.files["data"];
     const {
       data,
@@ -23,19 +18,13 @@ export default async function routes(fastify, options) {
       mimetype,
       size,
       md5,
-      tempFilePath
+      tempFilePath: path
     } = uploaded;
-
-    const stream = fs.createReadStream(tempFilePath);
-
-    await new Promise((resolve, reject) =>
-      stream.on("open", resolve).on("error", reject)
-    );
 
     const stored = await StoredObject.storeFile({
       filename,
+      path,
       mimetype,
-      stream,
       size,
       md5
     });

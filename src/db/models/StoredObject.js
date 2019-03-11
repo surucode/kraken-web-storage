@@ -1,3 +1,5 @@
+import fs from "fs";
+
 import mongoose from "mongoose";
 import StoredObjectSchema from "./StoredObject.schema.js";
 
@@ -9,20 +11,28 @@ const StoredObject = mongoose.model("StoredObject", StoredObjectSchema);
 StoredObject.storeFile = async ({
   filename,
   size,
-  stream,
+  path,
   mimetype,
   md5,
   pub,
   metadata
 }) => {
   let file = await File.findOne({ md5 }).exec();
+  const storages = (file && file.storage_nodes.length) || 0;
 
-  if (!file) {
+  if (storages < 3) {
     file = await File.create({ md5, mimetype, size });
     const nodes = await StorageNode.findRandom()
-      .limit(3)
+      .limit(3 - storages)
       .exec();
-    await Promise.all(nodes.map(node => node.writeFile(file, stream)));
+
+    try {
+      await Promise.all(
+        nodes.map(node => node.writeFile(file, fs.createReadStream(path)))
+      );
+    } finally {
+      file.save();
+    }
   }
 
   const stored = await StoredObject.create({
