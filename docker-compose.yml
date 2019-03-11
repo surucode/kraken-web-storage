@@ -37,56 +37,57 @@ services:
       - traefik.enable:false
 
   storage_one:
-    image: atmoz/sftp:alpine-3.7
+    image: kraken-storage-node
+    build: ./support/storages
     volumes:
       - ./support/storages/one/data:/home/data
       - ./support/storages/one/id_rsa.pub:/home/data/.ssh/keys/id_rsa.pub:ro
-      - ./support/storages/create_files_dir.sh:/etc/sftp.d/create_files_dir.sh
+    ports:
+      - 22
     networks:
       - podcloud
       - default
     labels:
       traefik.enable: false
-    command: data::1001
 
   storage_two:
-    image: atmoz/sftp:alpine-3.7
+    image: kraken-storage-node
     volumes:
       - ./support/storages/two/data:/home/data
       - ./support/storages/two/id_rsa.pub:/home/data/.ssh/keys/id_rsa.pub:ro
-      - ./support/storages/create_files_dir.sh:/etc/sftp.d/create_files_dir.sh
+    ports:
+      - 22
     networks:
       - podcloud
       - default
     labels:
       traefik.enable: false
-    command: data::1001
 
   storage_three:
-    image: atmoz/sftp:alpine-3.7
+    image: kraken-storage-node
     volumes:
       - ./support/storages/three/data:/home/data
       - ./support/storages/three/id_rsa.pub:/home/data/.ssh/keys/id_rsa.pub:ro
-      - ./support/storages/create_files_dir.sh:/etc/sftp.d/create_files_dir.sh
+    ports:
+      - 22
     networks:
       - podcloud
       - default
     labels:
       traefik.enable: false
-    command: data::1001
 
   storage_four:
-    image: atmoz/sftp:alpine-3.7
+    image: kraken-storage-node
     volumes:
       - ./support/storages/four/data:/home/data
       - ./support/storages/four/id_rsa.pub:/home/data/.ssh/keys/id_rsa.pub:ro
-      - ./support/storages/create_files_dir.sh:/etc/sftp.d/create_files_dir.sh
+    ports:
+      - 22
     networks:
       - podcloud
       - default
     labels:
       traefik.enable: false
-    command: data::1001
 
 networks:
   podcloud:
