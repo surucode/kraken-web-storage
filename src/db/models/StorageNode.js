@@ -14,9 +14,7 @@ StorageNode.prototype.getConn = function() {
       this.conn = new Client();
       this.conn
         .on("end", err => {
-          console.log(
-            `connection ended (with error ? ${err ? "yes" : "no"})`
-          );
+          console.log(`connection ended (with error ? ${err ? "yes" : "no"})`);
           this.conn = null;
         })
         .connect({
@@ -184,7 +182,7 @@ StorageNode.prototype.writeFile = async function(file, stream) {
 
 StorageNode.prototype.readFile = async function(file) {
   const sftp = await this.getSftp();
-  const path = `/files/${file.md5.match(/.{1,4}/g).join("/")}`;
+  const path = `/home/data/files/${file.md5.match(/.{1,4}/g).join("/")}`;
   console.log(`reading file ${path}/${file.md5}`);
   const stream = sftp.createReadStream(`${path}/${file.md5}`);
   stream.on("end", sftp.end.bind(sftp));

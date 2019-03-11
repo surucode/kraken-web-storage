@@ -16,6 +16,10 @@ export default async function routes(fastify, options) {
 
     const read_stream = await obj.getReadStream();
 
+    reply.header("Content-Type", `${obj.file.mimetype}`);
+    reply.header("Content-Disposition", `attachment; filename=${obj.filename}`);
+    reply.header("X-Metadata", JSON.stringify(obj.metadata || {}));
+
     await new Promise((resolve, reject) => {
       if (read_stream) {
         read_stream
